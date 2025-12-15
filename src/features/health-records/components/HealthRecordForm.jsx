@@ -1,0 +1,265 @@
+import { useState, useEffect } from "react";
+import { Save, AlertCircle } from "lucide-react";
+
+export function HealthRecordForm({ onSubmit, onCancel, initialData = null }) {
+  const [formData, setFormData] = useState({
+    animalId: "",
+    animalName: "",
+    type: "Chequeo",
+    date: new Date().toISOString().split("T")[0],
+    veterinarian: "",
+    diagnosis: "",
+    treatment: "",
+    status: "Completado",
+    description: "",
+  });
+
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (initialData) {
+      setFormData(initialData);
+    }
+  }, [initialData]);
+
+  const validate = () => {
+    const newErrors = {};
+    if (!formData.animalId.trim())
+      newErrors.animalId = "El ID del animal es requerido";
+    if (!formData.animalName.trim())
+      newErrors.animalName = "El nombre es requerido";
+    if (!formData.date) newErrors.date = "La fecha es requerida";
+    if (!formData.veterinarian.trim())
+      newErrors.veterinarian = "El nombre del veterinario es requerido";
+    if (!formData.diagnosis.trim())
+      newErrors.diagnosis = "El diagnóstico es requerido";
+
+    if (
+      new Date(formData.date) > new Date() &&
+      formData.status === "Completado"
+    ) {
+      newErrors.date =
+        "Una fecha futura no puede estar marcada como completada";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validate()) return;
+
+    setIsSubmitting(true);
+    try {
+      await onSubmit(formData);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    // Limpiar error al escribir
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: null }));
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            ID Animal
+          </label>
+          <input
+            type="text"
+            name="animalId"
+            value={formData.animalId}
+            onChange={handleChange}
+            placeholder="ej. BOV-001"
+            className={`w-full px-4 py-2 rounded-xl border ${
+              errors.animalId ? "border-red-500 bg-red-50" : "border-gray-200"
+            } focus:ring-2 focus:ring-green-500 outline-none transition-all`}
+          />
+          {errors.animalId && (
+            <p className="text-red-500 text-xs mt-1">{errors.animalId}</p>
+          )}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Nombre Animal
+          </label>
+          <input
+            type="text"
+            name="animalName"
+            value={formData.animalName}
+            onChange={handleChange}
+            className={`w-full px-4 py-2 rounded-xl border ${
+              errors.animalName ? "border-red-500 bg-red-50" : "border-gray-200"
+            } focus:ring-2 focus:ring-green-500 outline-none transition-all`}
+          />
+          {errors.animalName && (
+            <p className="text-red-500 text-xs mt-1">{errors.animalName}</p>
+          )}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Tipo de Registro
+          </label>
+          <select
+            name="type"
+            value={formData.type}
+            onChange={handleChange}
+            className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 outline-none"
+          >
+            <option value="Chequeo">Chequeo</option>
+            <option value="Vacunación">Vacunación</option>
+            <option value="Tratamiento">Tratamiento</option>
+            <option value="Desparasitación">Desparasitación</option>
+            <option value="Emergencia">Emergencia</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Estado
+          </label>
+          <select
+            name="status"
+            value={formData.status}
+            onChange={handleChange}
+            className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 outline-none"
+          >
+            <option value="Completado">Completado</option>
+            <option value="En Curso">En Curso</option>
+            <option value="Pendiente">Pendiente</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Fecha
+          </label>
+          <input
+            type="date"
+            name="date"
+            value={formData.date}
+            onChange={handleChange}
+            className={`w-full px-4 py-2 rounded-xl border ${
+              errors.date ? "border-red-500 bg-red-50" : "border-gray-200"
+            } focus:ring-2 focus:ring-green-500 outline-none`}
+          />
+          {errors.date && (
+            <p className="text-red-500 text-xs mt-1">{errors.date}</p>
+          )}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Veterinario
+          </label>
+          <input
+            type="text"
+            name="veterinarian"
+            value={formData.veterinarian}
+            onChange={handleChange}
+            className={`w-full px-4 py-2 rounded-xl border ${
+              errors.veterinarian
+                ? "border-red-500 bg-red-50"
+                : "border-gray-200"
+            } focus:ring-2 focus:ring-green-500 outline-none`}
+          />
+          {errors.veterinarian && (
+            <p className="text-red-500 text-xs mt-1">{errors.veterinarian}</p>
+          )}
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Diagnóstico
+        </label>
+        <input
+          type="text"
+          name="diagnosis"
+          value={formData.diagnosis}
+          onChange={handleChange}
+          className={`w-full px-4 py-2 rounded-xl border ${
+            errors.diagnosis ? "border-red-500 bg-red-50" : "border-gray-200"
+          } focus:ring-2 focus:ring-green-500 outline-none`}
+        />
+        {errors.diagnosis && (
+          <p className="text-red-500 text-xs mt-1">{errors.diagnosis}</p>
+        )}
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Descripción / Notas
+        </label>
+        <textarea
+          name="description"
+          value={formData.description}
+          onChange={handleChange}
+          rows="3"
+          className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 outline-none resize-none"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Tratamiento Generado
+        </label>
+        <textarea
+          name="treatment"
+          value={formData.treatment}
+          onChange={handleChange}
+          rows="2"
+          placeholder="Medicamentos o acciones a seguir..."
+          className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 outline-none resize-none"
+        />
+      </div>
+
+      {errors.submit && (
+        <div className="bg-red-50 text-red-600 p-3 rounded-xl flex items-center gap-2 text-sm">
+          <AlertCircle className="w-4 h-4" />
+          {errors.submit}
+        </div>
+      )}
+
+      <div className="flex gap-3 pt-4">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="flex-1 px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors font-medium"
+        >
+          Cancelar
+        </button>
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="flex-1 px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-lg transition-all font-medium flex items-center justify-center gap-2"
+        >
+          {isSubmitting ? (
+            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+          ) : (
+            <>
+              <Save className="w-4 h-4" />
+              Guardar Registro
+            </>
+          )}
+        </button>
+      </div>
+    </form>
+  );
+}

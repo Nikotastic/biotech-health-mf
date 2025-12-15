@@ -1,0 +1,1 @@
+export { VaccinationCalendar } from "./VaccinationCalendar";
