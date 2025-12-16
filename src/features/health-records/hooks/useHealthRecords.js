@@ -7,11 +7,11 @@ export const useHealthRecords = () => {
   const [error, setError] = useState(null);
   const [items, setItems] = useState([]); // Provide items alias for compatibility if needed
 
-  // Filtros
+  // Filters
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("all");
 
-  // Cargar registros cuando cambien los filtros
+  // Load records when filters change
   useEffect(() => {
     const fetchRecords = async () => {
       try {
@@ -31,7 +31,7 @@ export const useHealthRecords = () => {
       }
     };
 
-    // Debounce para búsqueda
+    // Debounce for search
     const timeoutId = setTimeout(() => {
       fetchRecords();
     }, 300);
@@ -43,7 +43,7 @@ export const useHealthRecords = () => {
     try {
       setLoading(true);
       await healthService.createRecord(newRecord);
-      // Recargar para obtener la lista actualizada
+      // Reload to get the updated list
       const data = await healthService.getHealthRecords({
         search: searchTerm,
         type: filterType,

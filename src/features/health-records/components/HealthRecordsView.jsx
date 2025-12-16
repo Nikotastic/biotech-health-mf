@@ -12,6 +12,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useHealthRecords } from "../hooks/useHealthRecords";
 import { Modal } from "../../../shared/components/Modal";
 import { HealthRecordForm } from "./HealthRecordForm";
+import { useToastStore } from "../../../shared/store/toastStore";
 
 export function HealthRecordsView({ onCreate: onExternalCreate, onEdit }) {
   const {
@@ -26,11 +27,30 @@ export function HealthRecordsView({ onCreate: onExternalCreate, onEdit }) {
   } = useHealthRecords();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const addToast = useToastStore((state) => state.addToast);
 
   const handleCreate = async (formData) => {
-    const success = await createRecord(formData);
-    if (success) {
-      setIsModalOpen(false);
+    try {
+      const success = await createRecord(formData);
+      if (success) {
+        addToast(`✅ Registro médico de "${formData.animalName}" creado correctamente`, "success");
+        setIsModalOpen(false);
+      } else {
+        addToast("❌ Error al crear el registro médico", "error");
+      }
+    } catch (error) {
+      console.error("Error creating record:", error);
+      const errorMessage = error.response?.data?.message || error.message;
+      
+      if (error.response?.status === 400) {
+        addToast("⚠️ Datos inválidos. Verifica todos los campos", "warning");
+      } else if (error.response?.status === 500) {
+        addToast("❌ Error del servidor. Intenta nuevamente", "error");
+      } else if (!error.response) {
+        addToast("🔌 No se pudo conectar con el servidor", "error");
+      } else {
+        addToast(`❌ Error: ${errorMessage}`, "error");
+      }
     }
   };
 

@@ -7,7 +7,7 @@ import {
 const DELAY = 800;
 
 export const healthService = {
-  // Obtener todos los registros médicos
+  // Get all health records
   getHealthRecords: async (filter = {}) => {
     return new Promise((resolve) => {
       setTimeout(() => {
@@ -31,7 +31,7 @@ export const healthService = {
     });
   },
 
-  // Obtener estadísticas del dashboard
+  // Get dashboard statistics
   getDashboardStats: async () => {
     return new Promise((resolve) => {
       setTimeout(() => {
@@ -40,17 +40,17 @@ export const healthService = {
     });
   },
 
-  // Obtener calendario de vacunación
+  // Get vaccination calendar
   getVaccinations: async (month, year) => {
     return new Promise((resolve) => {
       setTimeout(() => {
-        // En una implementación real, filtraríamos por fecha aquí
+        // In a real implementation, we would filter by date here
         resolve(vaccinationsMock);
       }, DELAY);
     });
   },
 
-  // Crear un nuevo registro
+  // Create a new record
   createRecord: async (record) => {
     return new Promise((resolve) => {
       setTimeout(() => {
@@ -66,12 +66,12 @@ export const healthService = {
     });
   },
 
-  // Obtener eventos próximos (para el dashboard)
+  // Get upcoming events (for the dashboard)
   getUpcomingEvents: async () => {
     return new Promise((resolve) => {
       setTimeout(() => {
         const pending = vaccinationsMock.filter((v) => v.status === "pending");
-        // Mapear al formato esperado por el dashboard
+        // Map to the expected format by the dashboard
         const events = pending.slice(0, 3).map((v) => ({
           date: v.date,
           event: `Vacunación: ${v.vaccine} - ${v.animal}`,
@@ -82,7 +82,7 @@ export const healthService = {
     });
   },
 
-  // Obtener tratamientos recientes (para el dashboard)
+  // Get recent treatments (for the dashboard)
   getRecentTreatments: async () => {
     return new Promise((resolve) => {
       setTimeout(() => {

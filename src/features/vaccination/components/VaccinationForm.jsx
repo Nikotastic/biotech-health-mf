@@ -3,7 +3,7 @@ import { Save, AlertCircle } from "lucide-react";
 
 export function VaccinationForm({ onSubmit, onCancel }) {
   const [formData, setFormData] = useState({
-    animal: "", // Debería ser un selector de animales, pero usaré texto por ahora
+    animal: "", // Should be an animal selector, but using text for now
     vaccine: "",
     date: new Date().toISOString().split("T")[0],
     priority: "medium",
@@ -20,8 +20,8 @@ export function VaccinationForm({ onSubmit, onCancel }) {
     if (!formData.date) newErrors.date = "La fecha es requerida";
 
     if (new Date(formData.date) < new Date(new Date().setHours(0, 0, 0, 0))) {
-      // Permitir fechas pasadas solor si status es completed?
-      // Por ahora, validación simple
+      // Allow past dates only if status is completed?
+      // For now, simple validation
     }
 
     setErrors(newErrors);

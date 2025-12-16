@@ -29,7 +29,7 @@ export default function HealthRecords() {
         </button>
       </div>
 
-      {/* Estadísticas */}
+      {/* Statistics */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="bg-green-50 rounded-lg p-6 border border-green-200">
           <div className="flex items-center justify-between">
@@ -72,7 +72,7 @@ export default function HealthRecords() {
         </div>
       </div>
 
-      {/* Tabla de registros */}
+      {/* Record table */}
       <div className="bg-white rounded-lg shadow-md overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
