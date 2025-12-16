@@ -1,102 +1,85 @@
-import {
-  healthRecordsMock,
-  vaccinationsMock,
-  statsMock,
-} from "../mocks/healthData";
-
-const DELAY = 800;
+import apiClient from "../utils/apiClient";
 
 export const healthService = {
-  // Get all health records
+  // Generic method to fetch records based on filter
   getHealthRecords: async (filter = {}) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        let filtered = [...healthRecordsMock];
-
-        if (filter.type && filter.type !== "all") {
-          filtered = filtered.filter((r) => r.type === filter.type);
+    let url = "/HealthEvent"; // Default or finding a way to get all
+    if (filter.farmId) {
+      url = `/HealthEvent/farm/${filter.farmId}`;
+    } else if (filter.animalId) {
+      url = `/HealthEvent/animal/${filter.animalId}`;
+    } else if (filter.batchId) {
+      url = `/HealthEvent/batch/${filter.batchId}`;
+    } else if (filter.type && filter.type !== "all") {
+      url = `/HealthEvent/type/${filter.type}`;
+    } else {
+      if (authStorage) {
+        try {
+          const { state } = JSON.parse(authStorage);
+          if (state?.selectedFarm?.id) {
+            url = `/HealthEvent/farm/${state.selectedFarm.id}`;
+          }
+        } catch (e) {
+          console.error("Error reading selected farm", e);
         }
+      }
+    }
 
-        if (filter.search) {
-          const searchLower = filter.search.toLowerCase();
-          filtered = filtered.filter(
-            (r) =>
-              r.animalName.toLowerCase().includes(searchLower) ||
-              r.animalId.toLowerCase().includes(searchLower)
-          );
-        }
+    try {
+      const response = await apiClient.get(url);
+      let data = response.data;
 
-        resolve(filtered);
-      }, DELAY);
-    });
+      if (filter.type && filter.type !== "all" && !url.includes("/type/")) {
+        data = data.filter((r) => r.type === filter.type);
+      }
+
+      if (filter.search) {
+        const searchLower = filter.search.toLowerCase();
+        data = data.filter(
+          (r) =>
+            (r.animalName &&
+              r.animalName.toLowerCase().includes(searchLower)) ||
+            (r.animalId &&
+              r.animalId.toString().toLowerCase().includes(searchLower))
+        );
+      }
+
+      return data;
+    } catch (error) {
+      console.error("Error fetching health records:", error);
+      return []; // Return empty array on error to prevent crash
+    }
   },
 
-  // Get dashboard statistics
+  // Create a new record
+  // POST /api/HealthEvent
+  createRecord: async (record) => {
+    const response = await apiClient.post("/HealthEvent", record);
+    return response.data;
+  },
+
+  // Get dashboard statistics (Mocked for now or implement if endpoint exists)
   getDashboardStats: async () => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(statsMock);
-      }, DELAY);
-    });
+    return {
+      totalAnimals: 0,
+      sickAnimals: 0,
+      pendingVaccines: 0,
+      healthIndex: 100,
+    };
   },
 
   // Get vaccination calendar
   getVaccinations: async (month, year) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        // In a real implementation, we would filter by date here
-        resolve(vaccinationsMock);
-      }, DELAY);
-    });
+    return [];
   },
 
-  // Create a new record
-  createRecord: async (record) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const newRecord = {
-          ...record,
-          id: Math.random().toString(36).substr(2, 9),
-          date: new Date().toISOString().split("T")[0],
-          status: "Completado", // Default status
-        };
-        healthRecordsMock.unshift(newRecord);
-        resolve(newRecord);
-      }, DELAY);
-    });
-  },
-
-  // Get upcoming events (for the dashboard)
+  // Get upcoming events
   getUpcomingEvents: async () => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const pending = vaccinationsMock.filter((v) => v.status === "pending");
-        // Map to the expected format by the dashboard
-        const events = pending.slice(0, 3).map((v) => ({
-          date: v.date,
-          event: `Vacunación: ${v.vaccine} - ${v.animal}`,
-          priority: v.priority,
-        }));
-        resolve(events);
-      }, DELAY);
-    });
+    return [];
   },
 
-  // Get recent treatments (for the dashboard)
+  // Get recent treatments
   getRecentTreatments: async () => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const treatments = healthRecordsMock
-          .filter((r) => r.type === "Tratamiento" || r.type === "Emergencia")
-          .slice(0, 3)
-          .map((r) => ({
-            animal: `${r.animalName} (${r.animalId})`,
-            treatment: r.treatment,
-            date: r.date,
-            status: r.status === "Completado" ? "success" : "warning",
-          }));
-        resolve(treatments);
-      }, DELAY);
-    });
+    return [];
   },
 };
