@@ -62,7 +62,7 @@ export function HealthRecordForm({ onSubmit, onCancel, initialData = null }) {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    // Limpiar error al escribir
+    // Clear error when writing
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: null }));
     }

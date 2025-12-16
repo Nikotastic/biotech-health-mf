@@ -26,7 +26,7 @@ const DiagnosticHistory = () => {
   }, [records, searchTerm]);
 
   const getSeverityColor = (status) => {
-    // Simulamos severidad basada en status o tipo
+    // We simulate severity based on status or type
     if (status === "En Curso" || status === "Emergencia")
       return "text-red-600 bg-red-50 border-red-200";
     if (status === "Pendiente")
