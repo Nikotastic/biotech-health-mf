@@ -1,10 +1,10 @@
-import apiClient from "../utils/apiClient";
+import apiService from "@shared-services/ApiService";
 
 export const healthService = {
   // POST /api/HealthEvent - Register a new health event
   createHealthEvent: async (eventData) => {
     try {
-      const response = await apiClient.post("/HealthEvent", eventData);
+      const response = await apiService.post("/HealthEvent", eventData);
       return response.data;
     } catch (error) {
       console.error("Error creating health event:", error);
@@ -23,7 +23,7 @@ export const healthService = {
       const url = params.toString()
         ? `/HealthEvent/farm?${params.toString()}`
         : "/HealthEvent/farm";
-      const response = await apiClient.get(url);
+      const response = await apiService.get(url);
       return response.data;
     } catch (error) {
       console.error("Error fetching health events for farm:", error);
@@ -34,7 +34,7 @@ export const healthService = {
   // GET /api/HealthEvent/animal/{animalId} - Get events for an animal
   getEventsByAnimal: async (animalId) => {
     try {
-      const response = await apiClient.get(`/HealthEvent/animal/${animalId}`);
+      const response = await apiService.get(`/HealthEvent/animal/${animalId}`);
       return response.data;
     } catch (error) {
       console.error(
@@ -48,7 +48,7 @@ export const healthService = {
   // GET /api/HealthEvent/batch/{batchId} - Get events for a batch
   getEventsByBatch: async (batchId) => {
     try {
-      const response = await apiClient.get(`/HealthEvent/batch/${batchId}`);
+      const response = await apiService.get(`/HealthEvent/batch/${batchId}`);
       return response.data;
     } catch (error) {
       console.error(
@@ -62,7 +62,7 @@ export const healthService = {
   // GET /api/HealthEvent/type/{type} - Get events by type
   getEventsByType: async (type) => {
     try {
-      const response = await apiClient.get(`/HealthEvent/type/${type}`);
+      const response = await apiService.get(`/HealthEvent/type/${type}`);
       return response.data;
     } catch (error) {
       console.error(`Error fetching health events of type ${type}:`, error);
@@ -73,7 +73,7 @@ export const healthService = {
   // GET /api/HealthEvent/dashboard-stats - Get health dashboard statistics
   getDashboardStats: async () => {
     try {
-      const response = await apiClient.get("/HealthEvent/dashboard-stats");
+      const response = await apiService.get("/HealthEvent/dashboard-stats");
       return response.data;
     } catch (error) {
       console.warn("Error getting dashboard stats:", error);
@@ -90,7 +90,7 @@ export const healthService = {
   // GET /api/HealthEvent/upcoming - Get upcoming health events/treatments
   getUpcomingEvents: async () => {
     try {
-      const response = await apiClient.get("/HealthEvent/upcoming");
+      const response = await apiService.get("/HealthEvent/upcoming");
       return response.data;
     } catch (error) {
       console.error("Error getting upcoming events:", error);
@@ -101,7 +101,7 @@ export const healthService = {
   // GET /api/HealthEvent/recent-treatments - Get recent treatments
   getRecentTreatments: async () => {
     try {
-      const response = await apiClient.get("/HealthEvent/recent-treatments");
+      const response = await apiService.get("/HealthEvent/recent-treatments");
       return response.data;
     } catch (error) {
       console.error("Error getting recent treatments:", error);
